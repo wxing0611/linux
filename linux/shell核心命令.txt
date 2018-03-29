@@ -1,0 +1,552 @@
+1.cd
+绝对路径（从根目录开始的路径）
+cd ~  进入/home/用户名　目录
+相对路径(从当前目录开始的路径)，前面不加修饰符或者./	
+cd 文件夹名 相当于 cd ./文件夹名
+cd ../文件夹	进入父级目录的文件夹
+切换到前一个路径（来回切换）　
+cd -
+回到上一级目录
+cd ..
+
+
+
+2.cp
+复制文件：
+cp 被复制文件路径/文件名　　目标文件路径
+cp 被复制文件路径/*.后缀名　　目标文件路径
+复制目录：
+cp 被复制的文件夹路径　需要存放的路径　-r
+
+
+
+3.mkdir
+新建一个文件夹
+mkdir 文件夹名
+新建文件夹，名字从0到20.
+mkdir {0..20}
+新建文件夹，名字从a到z
+mkdir {a..z}		＃｛z..a｝也可以
+新建多层文件夹（如果该文件夹的父文件夹也不存在，一并创建）
+mkdir -p 文件路径
+
+
+
+4.mv
+剪切（文件或目录都可）　
+mv  源文件路径  目录文件路径
+重命名（只能修改文件名字）
+mv 旧文件名　　新文件名
+
+
+
+5.创建一个文件
+touch 文件名
+
+
+
+6.rm
+删除文件和文件夹
+rm 文件名（只能删除文件，不能删除文件夹）
+删除文件夹（文件夹内还可以包含文件，多重删除）
+rm * -rf
+
+
+
+6.重定向 >	>>
+程序运行:
+        标准输入    stdin   0
+        标准输出    stdout  1
+        错误输出    stderr  2
+
+    重定向:
+        标准输出重定向: 
+	>等同于1>		覆盖标准输出
+	>>等同于1>>		追加标准输出
+	2>			覆盖错误输出	
+	2>>			追加错误输出
+        &>			覆盖所有输出
+	&>>			追加所有输出
+	
+	例子：li -l > test.txt
+
+	空输出
+	1>/dev/null
+
+
+
+
+
+
+7.mount
+挂载硬盘
+打开终端
+cd 命令
+cd /mnt/
+sudo mkdir 创建目录　　＃创建一个新目录
+sudo mount /dev/sda5 /mnt/创建的目录　　＃前提是我这个/dev/sda5是未挂载的磁盘，挂载到这个目录，既可以对其进行操作
+
+
+
+
+8.pwd
+显示当前路径
+
+
+
+9.ls
+	ls列出文件
+	ls -i  列出文件，加带inode信息（算是文件的唯一ＩＤ号）
+	ls -l　　相当于windows的列出文件详细信息
+	ll　　　　 ll 是ls -alF缩写或者叫别名
+	ls -a　　列出所有文件，包括隐藏文件
+	ls -il 既有ls -l的数据，也有ls -i的inode信息
+	例：ls -l
+	权限         硬链接数      用户　　用户所属的组   文件大小(bit)    最后修改时间　　　文件名
+	-rw-rw-r--     1         hadoop    hadoop        25500         2月  27 19:50　　 linux03.odt
+	权限位说明：
+	-rw-rw-r--
+第１位：
+	-普通文件
+	d目录文件(即文件夹)
+	l软链接文件(在终端下，输入ln -s 源文件名 软链接文件名,再输入ls -l，可以看到软链接文件名->源文件名,当源文件删除的时候，软链接文档就失效了．相当于windows的快捷方式，软链接经常用在创建快捷方式的时候)
+	p管道文件  sudo find /目录 -type p 
+	c字符设备文件  sudo find /目录 -type c
+	b块设备文件    sudo find /目录 -type b
+	s socket文件    sudo find /目录 -type s
+	第2－4位：用户权限(u);（第２位表示用户可读位，r表示可读，-表示不可读．第３位表示用户可写位，w表示可写，-表示不可写．第4位表示用户可执行位，ｘ表示可读，-表示不可执行，ｓ表示该文件或文件夹加了粘贴位，后面会讲解）
+	第5－7位：用户组权限(g);（同理）
+	第8－10位：其他人权限(o);（同理）
+
+硬链接数（硬连接，相当于浅拷贝，如内存贴标签）：
+	例子：已经有一个文件linux03.odt，执行下面语句：
+	ln linux03.odt yinlianjie.txt
+	可用ls -l进行查看，不仅创建了一个新文件yinlianjie.txt，而且硬件连接数＋１,且一样．随便改变一个文件的值，硬连接的所有文件都改变．硬连接的文件id是相等的．
+
+软连接：
+	ln -s linux03.odt ruanlianjie.txt
+	表示ruanlianjie.txt指向linux03.odt，再ls -l下可看ruanlianjie.txt文件的第一位是l，表示软连接文件．
+	该其中一个文件，它们都会改变．但是一旦你把软连接的链接源文件删掉，那么这个软连接文件也失效了．除非你再创建一个新的文件与软连接文件的源文件同名．软连接文件才有效．
+
+用户和用户组：
+	如果我是hadoop用户，该用户是hadoop组的．该用户创建一个文件或文件夹的用户和用户组就是hadoop（根据本身用户的权限而定，除了特权位，下面会讲解）
+	如果有一个wxing用户，该用户组是wxing，那么它创建一个文件或文件夹的用户和用户组就是wxing
+	如果wxing用户访问linux03.odt文件，该文件的用户和用户组是hadoop．wxing既不是hadoop用户也不是hadoop组，所以它访问该文件会以其他人权限进行访问（即权限的第8-10位），如果有r表示该用户可读此文件或文件夹，ｗ写（包括改，删除等操作），ｘ执行
+	如果有一个foo用户，该用户组是hadoop，那么它创建一个文件或文件夹的用户和用户组就是foo和hadoop组．
+	如果foo用户访问linux03.odt文件，该文件的用户和用户组是hadoop．foo不是hadoop用户，但它是hadoop组，所以它访问该文件会以用户组权限进行访问（即权限的第5-7位），如果有r表示该用户可读此文件或文件夹，ｗ写（包括改，删除等操作），ｘ执行
+
+特权位（对命令加特权位）
+	只要给touch命令或mkdir命令或其他，加了用户特权位或用户组特权位，无论是哪个用户执行touch或mkdir，创建得到的文件的用户或用户组都是root（注意不使用sudo，使用了sudo 就表示使用管理员权限执行，如：sudo mkdir tim　创建的新文件夹的文件拥有者和用户组都是root）
+	去掉特权位，执行同样的命令，换成-s即可，如下：
+	u+s，用户权限加特权
+	g+s，用户组权限加特权．			如果g+s对目录来设定，那么在该目录下直接创建文件、创建目录，这些文件或者目录的所有组就会自动继承该目录的所有组。
+	想对touch进行加特权位，先找touch该执行文件路径which touch
+	例子：命令用户加特权位：
+	#sudo chmod u+s /bin/touch  (u-s是去掉特权位)　ｕ表示用户加了特权位
+	创建文件看一下
+	touch 123.txt
+	ls -l
+	你会发现用户变成了root，表示无论哪个用户用touch创建文件，用ls -l看权限，它的用户权都是root，因为他给touch命令的用户权加了特权位
+	例子：命令用户组加了特权位：
+	#sudo chmod g+s /bin/touch
+	创建目录和文件查看一下
+	touch tmp.txt
+	ls -l
+	你会发现用户组变成了root，这就是特权位．
+	对mkdir做特权位修改，查看一下目录内容的文件和文件夹是否继承该目录的组和用户.
+	#sudo chmod u+s /bin/mkdir 
+	#sudo chmod g+s /bin/mkdir
+
+粘贴位
+	对于某个设置了粘帖位的文件夹，其它用户进入此文件夹，可以新建文件或者文件夹，修改自己建的文件或者文件夹，删除自己建的文件或者文件夹，但是，对该文件夹下的原有文件或文件夹不能进行删除操作
+	对目录设定，该目录下的文件或者目录只能是拥有者可以删除或者root可以删除，其他角色的用户，就算对该对象有写权限，也无法删除该对象。
+	例，给目录加粘贴位：chmod o+t /tmp/test/ 
+
+
+
+
+
+10.cat
+cat 　查看文档内容
+cat -n 查看文档内容的时候，前面有行号
+
+
+
+11.less
+less 文件名	＃分部显示文档内容　按回车向下滚动，按Q退出．
+
+
+
+12.head
+head 查看文档的前十行内容
+head -n 加行数　文档名（查看前n行内容）
+
+
+
+13.tail
+tail 查看文档后十行内容
+tail -n 行数 文档名（查看后n行内容）
+
+
+
+14.|管道
+管道命令(也就说，执行完一个命令之后，接着执行另一个命令，但是，前一个命令执行输出的结果，是后一个命令的输入，中间用|隔开)
+命令1|命令2|命令3|命令....
+ls -l|grep "linux*"|grep "linux03.odt" 
+
+
+
+
+15.alias
+列出当前命令别名
+    alias ll
+添加命令别名:
+  alias 命令别名='运行命令及参数'
+  alias fuck='ls -i'
+删除命令别名:
+    unalias fuck
+
+
+
+
+16.chmod
+修改权限
+修改所属用户权限为可读可写可执行
+    chmod u=rwx file
+修改所属用户权限为可读可写可执行，用户组为只读，其它用户没有权限
+    chmod u=rwx,g=r--,o=---  file
+
+给所属用户权限加读权限
+    chmod u+r file
+给所属用户权限取消读权限
+    chmod u-r file
+给所有用户加执行权限
+    chmod +x file
+权限二进制表示:
+    ---   000      0
+    --x   001      1
+    -w-   010      2
+    -wx   011      3
+    r--   100      4
+    r-x   101      5
+    rw-   110      6
+    rwx   111      7
+修改权限所属用户所有权限，组为只读，其它用户没有权限
+    chmod u=rwx,g=r--,o=--- file
+        或
+    chmod 740 file
+将目录及目录内文件或子目录都设置同样权限
+    chmod 700 dir/ -R
+
+
+
+17.chown
+ 修改文件所属用户和组:
+        sudo chown 所属用户名:所属用户组 file
+        修改目录及目录内文件或子目录的（用户权限和户用组权限）权限
+            chown kyo:mary dir/ -R
+
+注意：修改用户的用户组
+	新建用户组
+	sudo groupadd  用户组
+	删除用户组
+	sudo groupdel 　用户组
+	注意：尽量别动原来系统的用户，可创个新用户进行测试
+	修改用户所属的组(注意，组名在前，用户名在后)
+	usermod -g 用户组 用户名
+	强行设置某个用户所在组
+	usermod -G 用户组 用户名
+
+
+18.usermod
+修改用户权限：
+	usermod 
+
+
+
+
+19.ps|top|pstree
+进程管理
+    管理正在运行的程序, 一个程序包含一个或多个进程
+    进程唯一标识符(PID), 用PID来区分每个进程
+    查看进程: ps 	＃查看当前用户开启正在运行的进程
+	     top 	＃实时显示当前所有进程
+	     pstree	＃以树的方式显示所有进程
+        　　　　　ps -aux / ps -ef		＃查看当前系统所有正在运行的进程
+            　ps -aux | grep '查找的关键词'　　　　＃进行过滤查询　　------------　常用
+	终端任务管理器: top
+	    q       退出
+	    h       帮助
+	    k       杀进程
+	    空格    实时刷新当前任务列表
+	输出进程树: pstree
+	    pstree -p | grep '查找关键词'
+
+
+
+20.kill
+结束进程: kill 　　　　　　killall
+        kill -15 PID
+        kill -9 PID
+        killall -9 进程名
+        killall -15 进程名
+       kill -9 pid，是不顾后果的强制终止(如果你的速度够快，有时候是和ctrl＋c是一样的)
+       kill -15 pid，是先关闭和其有关的程序，再将其关闭
+
+        给对应进程组发信号:
+	    kill -15 -PID
+		进程组PID为父进程的PID, 进程组PID使用-来表示
+        给本进程组发信号:
+            kill -9 0
+        给所有进程发信号:
+            kill -9 -1
+	关闭进程：
+	kill -9 pid号
+	
+
+
+
+
+21.tar
+打包压缩
+tar -cf 生成的包名 打包的文件或目录		（常用记住）
+tar -cjf 生成的压缩包名 压缩的文件或目录，成jar包
+tar -czf 生成的压缩包名 压缩的文件或目录，成zip包
+linux的万能解包命令:				
+tar -xf 压缩包名 -C 解压路径			（常用记住）
+
+
+
+22.lsof
+查看端口
+	lsof -i:8000
+
+
+
+23.netstat
+查看网络接口：
+	netstat -aux|grep 8000
+
+
+24.history
+命令历史    history
+history     列出当前所有命令历史
+#history -r file  从文件中把命令历史读到当前会话
+history -w file  将当前会话命令历史写入到文件中
+命令历史默认保存文件: ~/.bash_history
+
+
+25.id
+查看当前用户uid gid 等信息
+每个用户对应一个数字，此数字叫UID
+        超级管理员用户(root) 在终端输入id root
+            管理整个操作系统，具备所有权限, 即没有权限区别
+            UID = 0 代表为超级管理用户
+        系统用户
+            系统用户用于服务操作
+            UID > 0 && UID < 1000 为系统用户
+        普通用户
+            普通用户用于登录系统
+            UID > 1000为普通用户
+
+    查看当前登录用户的信息: id
+    查看指定用户的信息: id 用户名
+
+
+
+26.man
+帮助文档，例read用法和说明信息：man -f read
+-f 就是看由多少文档对read进行说明．会列出对read进行说明的文档
+man 3posix read		＃3posix是选择看那个文档
+如果直接man read　默认看1posix文档
+
+
+
+27.用户的增删换
+添加用户: sudo adduser 新用户名
+删除用户:
+	如果删除用户的时候，提示进程在运行，请关闭终端，重新打开一个新终端．如果还有，则用kill -9 进程号进行停用
+	先删除了用户，但保留家目录，则再用userdel删除此用户的时候则无效，直接用rm删除家目录即可
+        sudo deluser 用户名
+            删除用户，但不删除用户家目录
+        用此命令进行删除用户：
+	sudo userdel -r 用户名
+            删除用户，也删除用户家目录
+切换用户: su   用户名
+
+
+
+28.umask
+	umask设置
+	目录的默认最大权限一般是777
+	文件的默认最大权限一般是666
+	当我们登录系统之后创建一个文件总是有一个默认权限的，那么这个权限是怎么来的呢？这就是umask干的事情。在终端输入umask查看umask码
+	umask -S查看权限说明
+	例如:默认文件夹权限是777
+	umask  0002
+	新文件夹的默认权限为775
+	即rwxrwxr-x可以建个文件夹试试
+	权限二进制表示:
+	    ---   000      0
+	    --x   001      1
+	    -w-   010      2
+	    -wx   011      3
+	    r--   100      4
+	    r-x   101      5
+	    rw-   110      6
+	    rwx   111      7
+	新文件默认为666-2=664
+	即rw-rw-r--可以建个文件试试
+	修改umask值（永久）
+	永久修改（本用户）
+	sudo vim ~/.bashrc
+	在文件的未尾加上umask 022，022是umask码，然后保存　
+	执行source ~/.bashrc
+	永久修改(影响所有用户)
+	# sudo vim /etc/profile
+	在文件的未尾加上umask umask码，然后保存　
+	执行source ~/.bashrc
+
+
+
+29.which
+查找命令
+查找$PATH(echo $PATH)变量指定的目录里的命令,which命令用于查找并显示给定命令的绝对路径
+which pycharm.sh 
+which pwd
+
+
+
+30.whereis
+whereis pycharm.sh 
+查找命令路径，帮助文档等
+
+
+
+31.locate 
+locate pycharm.sh
+例如新建一个zyf0622.bbb
+用locate zyf0622.bbb是查不到的，然后sudo updatedb，再次查找，就能找得到
+locate命令不是实时查找，所以查找的结果不精确，但查找速度很快。因为它查找的不是目录，而是一个数据库（/var/lib/locatedb），系统会自动到达一定时间，把这段时间内创建的文件或文件夹加入数据库中．执行sudo　updatedb　让数据库不需要等待到达那个时间才回收．可立马回收．
+为什么快呢？他是通过数据库索引方式查找，所以会更快．
+如果想实时查询，则要先sudo updatedb
+
+
+
+32.find                            
+文件查找命令，功能最强大，速度慢，因为会扫描整个硬盘
+   --   find /etc -name grub.conf   查找/etc目录下的grub.conf文件
+   --   find / -name "*.conf"       查找/下所有.conf文件
+        find  / -iname grub.conf    查找/目录下的grub.conf文件，忽略大小写
+        find / -maxdepth 2 -name grub.conf     可以使用-maxdepath参数来控制查找的层次，就是说只查当前目录和子目录,最多查2级目录
+        find / -mindepth 2 -name grub.conf     最少查二级目录
+        find /etc -type d           查找/etc/下所有的目录
+        find /etc -type f           查找/etc/下的所有普通文件
+        find /etc -type l -name *.conf      查找/etc/下软链接文件是.conf结尾的文件
+        find /etc -type s           查找/etc/下所有socket文件
+        find /etc -type c           查找/etc/下的所有字符设备文件
+        find /etc -type p           查找/etc/下所有管道文件
+        find /etc -user root        查找/etc/所属用户是root的文件
+        find /etc -group root       查找/etc/所属用户组是root的文件
+        find /etc -uid 1000          查找/etc/下uid是1000的文件,和-user类似
+        find /etc -gid 1000          查找/etc/下gid是500的文件,和-group类似
+        find . -size +10M           查找当前目录下大于10M的文件，单位可以有K,M,G,b等
+        find / -size -2M            查找根目录下少于2M的文件
+        find / -mtime 1             查找根目录下1小时以前修改的所有文件
+        find / -mtime +2            查找根目录下2个多小时以前修改的所有文件
+        find / -mtime -3            查找根目录下最近3小时内修改的所有文件
+        find / -atime 1             查找根目录下1天以前访问或读过的所有文件
+        find / -atime -1            查找根目录下最近1天内读过或访问的文件
+        find / -ctime -3            查找根目录下最近3天内状态发生改变的文件
+        find / -cmin -3             查找根目录下最近3分钟内状态发生改变的文件
+        find / -empty               查找根目录下所有空白文件或者空目录
+
+
+
+33.wc                                      
+统计命令（一个中文字三个字符，一个英文字一个字符，最后加起来的总数再加１，才会得到wc得到的显示结果）
+        wc -c bb.txt                  统计bb.txt文件里有多少个字符
+        wc -w bb.txt                   统计bb.txt文件里有多少个单词
+        wc -l bb.txt                   统计bb.txt文件里有多少行(包含空行)
+
+
+34. sort                                    
+排序命令
+         sort -n bb.txt                按数据排序
+         sort -u bb.txt                 去除重复行显示
+         sort -r bb.txt                 反向排序
+         sort -n -k5 bb.txt            指定第五列进行按数字排序
+
+
+
+35.uniq                             
+去除文件中相邻的重复行
+        uniq -u bb.txt                 只显示相邻的没有被重复过的行
+        uniq -d bb.txt                 只显示相邻的被重复过的行
+        uniq -i bb.txt                 忽略大小写去除文件中相邻的重复行
+        uniq -c bb.txt               统计相邻重复行数
+
+
+
+
+36.diff
+比较文件差异
+        diff -B bb.txt bb.txt          忽略空行造成的不同
+
+
+
+
+
+
+37.grep                                    
+搜索文本
+        grep -i hello bb.txt           在bb.txt文件里找hello并且忽略大写查找
+        grep -n hello bb.txt           在bb.txt文件里找hello并给结果排号，如果是对目录搜索可以显示在文件里出现的行号
+        grep -w hello bb.txt           在bb.txt文件里找完全匹配hello单词的行
+        grep -v hello bb.txt          显示出在/bb.txt文件里没有hello的行
+        grep -r hello bb.txt          在当前目录里所有文件里找hello显示
+
+
+
+
+38.tr                                      
+替换字符
+        cat bb.txt | tr a b            查看/etc/passwd文件并把里面的a替换成b
+        tr a-z A-Z  < bb.txt           把/etc/passwd文件里的小写全转成大写
+
+
+
+39.Sed 流编辑器
+sed是一种流编辑器，它是文本处理中非常中的工具，能够完美的配合正则表达式使用，功能不同凡响。处理时，把当前处理的行存储在临时缓冲区中，称为“模式空间”（pattern space），接着用sed命令处理缓冲区中的内容，处理完成后，把缓冲区的内容送往屏幕。接着处理下一行，这样不断重复，直到文件末尾。文件内容并没有改变，除非你使用重定向存储输出。Sed主要用来自动编辑一个或多个文件；简化对文件的反复操作；编写转换程序等。
+    删除(过滤输出) d
+        指定删除第一行
+            sed -e '1d' bb.txt
+        删除第二行到第四行
+            sed -e '2,4d' bb.txt
+        删除第二和第四行
+            sed -e '2d;4d' bb.txt
+        删除第一行到第三行和第五行
+            sed -e '1,3d;5d' bb.txt
+        删除匹配root的行
+            sed -e '/root/d' bb.txt
+        删除匹配以ftp开头的行
+            sed -e '/^ftp/d' bb.txt
+        删除匹配以bash为结尾的行
+            sed -e '/bash$/d' bb.txt
+     打印 p
+        打印第一行
+            sed -ne '1p' bb.txt        不加n参数没有效果
+        打印匹配root开头的行
+            sed -ne '/^root/p' bb.txt
+        打印以小写字母开头，和以nologin结尾的行(相当于or，会重复打印)
+            sed -ne '/^[a-z]/p;/nologin$/p' bb.txt
+        打印以root开头和以ftp开头的行
+            sed -ne '/^root/p;/^ftp/p' bb.txt
+    替换 s
+        把每行的root替换成kyo
+            sed -e 's/root/kyo/g' bb.txt
+        把每行的第二个root替换成kyo
+            sed -e 's/root/kyo/2' bb.txt
+        指定2到10行范围把root替换成kyo
+            sed -e '2,10s/root/kyo/g' bb.txt
+
